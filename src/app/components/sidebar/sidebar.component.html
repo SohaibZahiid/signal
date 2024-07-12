@@ -1,0 +1,88 @@
+<div class="h-full bg-secondary">
+  <!-- top bar -->
+  <div class="bg-primary py-2 px-4 flex justify-between items-center">
+    <div class="flex flex-1 items-center gap-4">
+      <img
+        src="default.jpg"
+        alt="profile picture"
+        class="w-[40px] h-[40px] object-cover rounded-full"
+      />
+      <h3 class="text-white font-bold">
+        {{ authService.loggedInUser()?.username | titlecase }}
+      </h3>
+      <div class="ml-auto cursor-pointer" (click)="onLogout()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="icon icon-tabler icons-tabler-outline icon-tabler-logout text-gray-400"
+        >
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path
+            d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"
+          />
+          <path d="M9 12h12l-3 -3" />
+          <path d="M18 15l3 -3" />
+        </svg>
+      </div>
+    </div>
+  </div>
+  <!-- end top bar -->
+  <!-- sidebar -->
+  <div>
+    <!-- search bar -->
+    <div class="relative py-2 px-4">
+      <div class="flex justify-between items-center">
+        <input
+          type="text"
+          placeholder="Search new chat"
+          class="outline-none text-white bg-input py-1 px-10 rounded flex-1"
+          [(ngModel)]="searchInput"
+          (input)="onSearchInputChange()"
+        />
+      </div>
+
+      @if(searchInput) {
+      <div
+        class="bg-input rounded absolute z-10 top-12 right-4 left-4 min-h-10"
+      >
+        @if(searchedUsers().length > 0) { @for(user of searchedUsers(); track
+        user.username) {
+        <app-conversation [user]="user" (searchCleared)="onSearchCleared()" />
+        } } @else {
+        <div class="mt-2 text-center">
+          <small class="text-[#667781]">0 users found</small>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    <!-- end search bar -->
+    <!-- users -->
+    <div
+      class="flex flex-col overflow-y-auto"
+      style="max-height: calc(100vh - 105px)"
+    >
+      @if(chatService.userConversations().length > 0) { @for(userConversation of
+      chatService.userConversations(); track userConversation._id) {
+      <app-conversation
+        [user]="getFriendId(userConversation)"
+        [conversation]="userConversation"
+      />
+      } } @else {
+      <div class="py-16 text-center">
+        <small class="text-[#667781]"
+          >No chats, contacts or messages found</small
+        >
+      </div>
+      }
+    </div>
+    <!-- users end -->
+  </div>
+</div>

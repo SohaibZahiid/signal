@@ -1,0 +1,10 @@
+<div class="h-full flex flex-col border-l border-slate-700/95 bg-primary">
+  <div
+    class="h-full flex flex-col gap-2 justify-center items-center text-white"
+  >
+    <h2 class="text-2xl">
+      Welcome {{ authService.loggedInUser()?.username | titlecase }}
+    </h2>
+    <h4 class="">Select a user to start messaging</h4>
+  </div>
+</div>
