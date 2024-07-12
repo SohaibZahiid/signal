@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-// const app = express();
 ////// SOCKET SERVER ////////
 const { server, app } = require("./socket/socket.js");
 require("dotenv").config();
@@ -20,8 +19,6 @@ const userRoutes = require("./routes/user");
 app.use("/auth", userRoutes);
 const messageRoutes = require("./routes/message");
 app.use("/message", messageRoutes);
-const conversationRoutes = require("./routes/conversation");
-app.use("/conversation", conversationRoutes);
 
 const PORT = process.env.PORT || 3000;
 

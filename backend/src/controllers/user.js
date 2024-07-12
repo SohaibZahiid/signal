@@ -1,38 +1,6 @@
 const User = require("../models/User");
+const Conversation = require("../models/Conversation");
 const jwt = require("jsonwebtoken");
-
-///// NOT IN USE CURRENTLY ////
-const getUser = async (req, res) => {
-  try {
-    const userExists = await User.findById(req.params.userId);
-
-    if (!userExists) {
-      return res.status(404).json("User not found");
-    }
-
-    const { password, ...user } = userExists.toObject();
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json(error.message);
-  }
-};
-
-const getUsersByUsername = async (req, res) => {
-  try {
-    const users = await User.find({
-      username: { $regex: req.query.username, $options: "i" },
-      _id: { $ne: req.user._id },
-    }).select("-password");
-
-    if (!users) {
-      return res.status(404).json("User not found");
-    }
-
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json(error.message);
-  }
-};
 
 const register = async (req, res) => {
   try {
@@ -76,4 +44,23 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { getUser, getUsersByUsername, register, login };
+const getUsers = async (req, res) => {
+  const loggedInUserId = req.user._id;
+  try {
+    const users = await User.find({
+      _id: { $ne: loggedInUserId },
+    }).select("-password");
+
+    const conversations = await Conversation.find({
+      members: loggedInUserId,
+    });
+
+    console.log({ conversations });
+
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};
+
+module.exports = { register, login, getUsers };
