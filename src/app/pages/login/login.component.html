@@ -1,0 +1,66 @@
+<div class="bg-black h-[100vh]">
+  <div class="bg-[#00a884] h-[222px]"></div>
+  <div
+    class="bg-white w-[90%] max-w-[1000px] mx-auto py-5 -translate-y-20 rounded"
+  >
+    @if(errorMessage) {
+    <p class="text-red-500 text-xs text-center">{{ errorMessage }}</p>
+    }
+    <!-- form -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="p-10 flex flex-col gap-4 max-w-[50%] mx-auto">
+        <div class="">
+          <label
+            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+          >
+            Email
+          </label>
+          <input
+            class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full mb-3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-btnHover"
+            type="text"
+            placeholder="jane@gamil.com"
+            formControlName="email"
+          />
+          @if(loginForm.controls["email"].invalid
+          &&(loginForm.controls["email"].touched ||
+          loginForm.controls["email"].dirty)) {
+          @if(loginForm.controls["email"].errors?.["required"]){
+          <p class="text-red-500 text-xs">Email is required</p>
+          } @if(loginForm.controls["email"].errors?.["email"]) {
+          <p class="text-red-500 text-xs">Email is not valid</p>
+          } }
+        </div>
+
+        <div class="">
+          <label
+            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+          >
+            Password
+          </label>
+          <input
+            class="bg-gray-200 appearance-none border-2 border-gray-200 rounded w-full mb-3 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-btnHover"
+            type="password"
+            placeholder="*****"
+            name="password"
+            formControlName="password"
+          />
+          @if(loginForm.controls["password"].invalid
+          &&(loginForm.controls["password"].touched ||
+          loginForm.controls["password"].dirty)) {
+          @if(loginForm.controls["password"].errors?.["required"]){
+          <p class="text-red-500 text-xs">Password is required</p>
+          } }
+        </div>
+        <button
+          class="self-center bg-[#00a884] text-white font-bold py-2 px-4 rounded-full"
+        >
+          Login
+        </button>
+        <p class="text-sm text-center">
+          Don't have an account? <a routerLink="/register">Register here</a>
+        </p>
+      </div>
+    </form>
+    <!-- end form -->
+  </div>
+</div>
