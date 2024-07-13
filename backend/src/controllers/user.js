@@ -1,5 +1,4 @@
 const User = require("../models/User");
-const Conversation = require("../models/Conversation");
 const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
@@ -44,18 +43,16 @@ const login = async (req, res) => {
   }
 };
 
-const getUsers = async (req, res) => {
-  const loggedInUserId = req.user._id;
+const findUserByUsername = async (req, res) => {
   try {
     const users = await User.find({
-      _id: { $ne: loggedInUserId },
+      username: { $regex: req.query.username, $options: "i" },
+      _id: { $ne: req.user._id },
     }).select("-password");
 
-    const conversations = await Conversation.find({
-      members: loggedInUserId,
-    });
-
-    console.log({ conversations });
+    if (!users) {
+      return res.status(404).json("User not found");
+    }
 
     res.status(200).json(users);
   } catch (error) {
@@ -63,4 +60,4 @@ const getUsers = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getUsers };
+module.exports = { register, login, findUserByUsername };

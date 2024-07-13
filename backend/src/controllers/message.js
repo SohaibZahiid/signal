@@ -1,5 +1,6 @@
 const Message = require("../models/Message");
 const Conversation = require("../models/Conversation");
+const { getReceiverSocketId, io } = require("../socket/socket");
 
 const sendMessage = async (req, res) => {
   const senderId = req.user._id;
@@ -25,12 +26,22 @@ const sendMessage = async (req, res) => {
 
     if (newMessage) conversation.messages.push(newMessage._id);
 
-    // await conversation.save();
-    // await newMessage.save();
-
     // this will run in parallel
     await Promise.all([conversation.save(), newMessage.save()]);
-    res.status(200).json(newMessage);
+
+    conversation = await Conversation.findById(conversation._id).populate(
+      "members"
+    );
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("get-message", {
+        message: newMessage,
+        conversation,
+      });
+    }
+
+    res.status(200).json({ message: newMessage, conversation });
   } catch (error) {
     res.status(500).json(error);
   }
@@ -44,7 +55,7 @@ const getMessages = async (req, res) => {
       members: { $all: [senderId, receiverId] },
     }).populate("messages");
 
-    if (!conversation) return res.status(500).json("conversation not found");
+    if (!conversation) return res.status(200).json([]);
 
     res.status(200).json(conversation.messages);
   } catch (error) {

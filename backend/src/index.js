@@ -19,6 +19,8 @@ const userRoutes = require("./routes/user");
 app.use("/auth", userRoutes);
 const messageRoutes = require("./routes/message");
 app.use("/message", messageRoutes);
+const conversationRoutes = require("./routes/conversation");
+app.use("/conversation", conversationRoutes);
 
 const PORT = process.env.PORT || 3000;
 

@@ -14,6 +14,10 @@ const io = new Server(server, {
 
 const userSocketMap = {};
 
+const getReceiverSocketId = (receiverId) => {
+  return userSocketMap[receiverId];
+};
+
 io.on("connection", (socket) => {
   const userId = socket.handshake.query.userId;
 
@@ -25,10 +29,10 @@ io.on("connection", (socket) => {
   //   return userSocketMap[receiverId];
   // };
 
-  //SEND MESSAGE
-  socket.on("send-message", (message) => {
-    io.to(userSocketMap[message.receiverId]).emit("get-message", message);
-  });
+  // //SEND MESSAGE
+  // socket.on("send-message", (message) => {
+  //   io.to(userSocketMap[message.receiverId]).emit("get-message", message);
+  // });
 
   socket.on("disconnect", () => {
     delete userSocketMap[userId];
@@ -36,4 +40,4 @@ io.on("connection", (socket) => {
   });
 });
 
-module.exports = { app, io, server };
+module.exports = { app, io, server, getReceiverSocketId };

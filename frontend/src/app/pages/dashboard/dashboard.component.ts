@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { ChatService } from '../../services/chat.service';
 import { WelcomeComponent } from '../../components/welcome/welcome.component';
 import { SocketService } from '../../services/socket.service';
+import { MenuService } from '../../services/menu.service';
 
 
 @Component({
@@ -19,4 +20,9 @@ export class DashboardComponent {
   authService = inject(AuthService)
   chatService = inject(ChatService)
   socketService = inject(SocketService)
+  menuService = inject(MenuService)
+
+  constructor() {
+    this.socketService.getOnlineUsers()
+  }
 }

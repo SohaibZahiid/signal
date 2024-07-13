@@ -3,15 +3,20 @@ import { io, Socket } from 'socket.io-client';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { Message } from '../interfaces/message';
+import { Conversation } from '../interfaces/conversation';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SocketService implements OnDestroy {
+export class SocketService {
   socket = signal<Socket | undefined>(undefined)
   onlineUsers = signal<string[]>([])
 
   constructor(private authService: AuthService) {
+  }
+
+
+  getOnlineUsers() {
     if (this.authService.loggedInUser()) {
       const socket = io("http://localhost:3000", {
         query: {
@@ -27,16 +32,12 @@ export class SocketService implements OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.socket()?.close()
-  }
-
   sendMessage(message: Message) {
     this.socket()?.emit("send-message", message)
   }
 
   getMessage() {
-    const observable = new Observable<Message>(observer => {
+    const observable = new Observable<{ message: Message, conversation: Conversation }>(observer => {
       this.socket()?.on("get-message", message => {
         observer.next(message)
       })

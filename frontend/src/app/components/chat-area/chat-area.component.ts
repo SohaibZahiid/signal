@@ -3,9 +3,8 @@ import { AfterViewChecked, Component, ElementRef, inject, signal, viewChild } fr
 import { ChatService } from '../../services/chat.service';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
-import { Message } from '../../interfaces/message';
-import { switchMap, tap } from 'rxjs';
 import { SocketService } from '../../services/socket.service';
+import { MenuService } from '../../services/menu.service';
 
 @Component({
   selector: 'app-chat-area',
@@ -17,6 +16,7 @@ export class ChatAreaComponent implements AfterViewChecked {
   chatService = inject(ChatService)
   authService = inject(AuthService)
   socketService = inject(SocketService)
+  menuService = inject(MenuService)
 
   chatArea = viewChild<ElementRef>("chatArea")
   messageInput = signal("")
@@ -24,8 +24,12 @@ export class ChatAreaComponent implements AfterViewChecked {
 
   constructor() {
     this.socketService.getMessage().subscribe({
-      next: message => {
-        this.chatService.selectedUserMessages().push(message)
+      next: ({ message, conversation }) => {
+        const currentSelectedUser = this.chatService.selectedUser();
+        // Ensure message belongs to current chat
+        if (currentSelectedUser && conversation.members.some(member => member._id === currentSelectedUser._id)) {
+          this.chatService.selectedUserMessages.update(values => [...values, message]);
+        }
       },
       error: err => {
         console.log(err);
@@ -40,18 +44,30 @@ export class ChatAreaComponent implements AfterViewChecked {
   }
 
   onSendMessage() {
+    const senderId = this.authService.loggedInUser()?._id
     const receiverId = this.chatService.selectedUser()?._id
-    if (!receiverId) return
+    if (!senderId || !receiverId) return
 
     this.chatService.sendMessage(receiverId, this.messageInput()).subscribe({
-      next: message => {
+      next: ({ message, conversation }) => {
         this.chatService.selectedUserMessages.update(values => [...values, message])
+        this.socketService.sendMessage(message)
+
+        const conversationExists = this.chatService.userConversations().find(conv => conv._id === conversation._id)
+        if (!conversationExists) {
+          this.chatService.userConversations.update(values => [conversation, ...values])
+        }
+        this.messageInput.set("")
       },
       error: err => {
         console.log(err);
       }
     })
 
+  }
+
+  openMenu() {
+    this.menuService.isOpen.set(true)
   }
 
 }

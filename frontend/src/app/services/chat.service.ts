@@ -17,44 +17,27 @@ export class ChatService {
   //Global states
   selectedUser = signal<User | undefined>(undefined)
   selectedUserMessages = signal<Message[]>([])
-  conversationsLastMessages = signal<Message[]>([])
   userConversations = signal<Conversation[]>([])
-  recentChattedUsers = signal<User[]>([])
 
   constructor(private http: HttpClient) { }
 
   sendMessage(receiverId: string, message: string) {
-    return this.http.post<Message>(`${this.API}/message/${receiverId}`, { message }, this.requestOptions)
+    return this.http.post<{ message: Message, conversation: Conversation }>(`${this.API}/message/${receiverId}`, { message }, this.requestOptions)
   }
 
   getMessages(receiverId: string) {
     return this.http.get<Message[]>(`${this.API}/message/${receiverId}`, this.requestOptions)
   }
 
-  getUsersLastMessages() {
-    return this.http.get<Message[]>(`${this.API}/message`, this.requestOptions)
+  getUserConversations() {
+    return this.http.get<Conversation[]>(`${this.API}/conversation`, this.requestOptions);
   }
 
-  getConversationsMessages(conversationIds: string[]) {
-    return this.http.get<Message[]>(`${this.API}/message/${conversationIds}`, this.requestOptions)
-  }
-
-  getUserMessages(conversationId: string) {
-    return this.http.get<Message[]>(`${this.API}/message/${conversationId}`, this.requestOptions)
-  }
-
-
-
-  createConversation(senderId: string, receiverId: string) {
-    return this.http.post<Conversation>(`${this.API}/conversation`, { senderId, receiverId }, this.requestOptions)
-  }
-
-  getConversations(userId: string) {
-    return this.http.get<Conversation[]>(`${this.API}/conversation/${userId}`, this.requestOptions)
-  }
-
-  getUsersByUsername(username: string) {
-    return this.http.get<User[]>(`${this.API}/auth/users?username=${username}`, this.requestOptions)
+  conversationExists(senderId: string, receiverId: string) {
+    return this.userConversations().some(conversation => {
+      const membersIds = conversation.members.map(member => member._id)
+      return membersIds.includes(senderId) && membersIds.includes(receiverId)
+    })
   }
 
 }

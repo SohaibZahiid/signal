@@ -6,18 +6,19 @@ import { User } from '../interfaces/user';
   providedIn: 'root'
 })
 export class AuthService {
+  private API: string = "http://localhost:3000"
   private requestOptions = {
     headers: new HttpHeaders({
       'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user')!)?.token}`
     })
   }
-  private API: string = "http://localhost:3000"
+
   loggedInUser = signal<User | undefined>(this.localStorageUser() || undefined)
 
   constructor(private http: HttpClient) { }
 
-  getUsers() {
-    return this.http.get<User[]>(`${this.API}/auth`, this.requestOptions);
+  getUsersByUsername(username: string) {
+    return this.http.get<User[]>(`${this.API}/auth/users?username=${username}`, this.requestOptions);
   }
 
   register(user: User) {

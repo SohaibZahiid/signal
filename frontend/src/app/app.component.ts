@@ -6,7 +6,6 @@ import { LoginComponent } from "./pages/login/login.component";
   selector: 'app-root',
   standalone: true,
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
   imports: [RouterOutlet, LoginComponent]
 })
 export class AppComponent {

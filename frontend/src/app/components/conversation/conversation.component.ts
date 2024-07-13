@@ -1,9 +1,8 @@
 import { TitleCasePipe } from '@angular/common';
-import { AfterContentInit, Component, computed, EventEmitter, inject, Input, input, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, input, Output } from '@angular/core';
 import { User } from '../../interfaces/user';
 import { ChatService } from '../../services/chat.service';
 import { AuthService } from '../../services/auth.service';
-import { Conversation } from '../../interfaces/conversation';
 import { SocketService } from '../../services/socket.service';
 
 @Component({
@@ -17,7 +16,7 @@ export class ConversationComponent {
   authService = inject(AuthService)
   socketService = inject(SocketService)
 
-  user = input.required<User>()
+  user = input<User>()
 
   @Output() searchCleared = new EventEmitter<void>()
 
@@ -32,7 +31,7 @@ export class ConversationComponent {
 
     if (!this.user()?._id) return this.chatService.selectedUserMessages.set([])
 
-    this.chatService.getMessages(this.user()?._id).subscribe({
+    this.chatService.getMessages(this.user()!._id).subscribe({
       next: messages => {
         this.chatService.selectedUserMessages.set(messages)
       },
