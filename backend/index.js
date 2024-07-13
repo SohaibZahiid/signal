@@ -1,9 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 ////// SOCKET SERVER ////////
-const { server, app } = require("./socket/socket.js");
+const { server, app } = require("./src/socket/socket.js");
 require("dotenv").config();
-const connectDb = require("./db/connect");
+const connectDb = require("./src/db/connect.js");
 
 ////// MIDDLEWARE ////////
 app.use(
@@ -15,11 +15,11 @@ app.use(
 app.use(express.json());
 
 ////// ROUTES ////////
-const userRoutes = require("./routes/user");
+const userRoutes = require("./src/routes/user.js");
 app.use("/auth", userRoutes);
-const messageRoutes = require("./routes/message");
+const messageRoutes = require("./src/routes/message.js");
 app.use("/message", messageRoutes);
-const conversationRoutes = require("./routes/conversation");
+const conversationRoutes = require("./src/routes/conversation.js");
 app.use("/conversation", conversationRoutes);
 
 const PORT = process.env.PORT || 3000;
