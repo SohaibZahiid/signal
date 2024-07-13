@@ -6,7 +6,7 @@ import { User } from '../interfaces/user';
   providedIn: 'root'
 })
 export class AuthService {
-  private API: string = "http://localhost:3000"
+  private API: string = "https://signal-klx5.onrender.com"
   private requestOptions = {
     headers: new HttpHeaders({
       'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user')!)?.token}`

@@ -28,8 +28,6 @@ app.use(
   express.static(path.join(__dirname, "../frontend/dist/frontend/browser"))
 );
 
-console.log(__dirname);
-
 app.get("*", (req, res) => {
   res.sendFile(
     path.join(

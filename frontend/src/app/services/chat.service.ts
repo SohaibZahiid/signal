@@ -8,7 +8,7 @@ import { Message } from '../interfaces/message';
   providedIn: 'root'
 })
 export class ChatService {
-  private API: string = "http://localhost:3000"
+  private API: string = "https://signal-klx5.onrender.com"
   private requestOptions = {
     headers: new HttpHeaders({
       'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user')!).token}`

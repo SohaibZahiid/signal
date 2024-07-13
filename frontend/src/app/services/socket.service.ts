@@ -18,7 +18,7 @@ export class SocketService {
 
   getOnlineUsers() {
     if (this.authService.loggedInUser()) {
-      const socket = io("http://localhost:3000", {
+      const socket = io("https://signal-klx5.onrender.com", {
         query: {
           userId: this.authService.loggedInUser()?._id
         }
