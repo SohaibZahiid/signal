@@ -1,14 +1,11 @@
 <div class="bg-[#0c1317]">
   <div class="flex h-screen xl:p-5 max-w-[1600px] mx-auto">
+    <app-spinner />
     <app-sidebar
       class="absolute z-10 {{
         menuService.isOpen() ? 'left-0' : '-left-[100%]'
       }} md:left-0 top-0 bottom-0 md:relative w-1/3 min-w-[250px] border-r border-slate-700/95 transition-all"
     />
-    @if (chatService.selectedUser()) {
-      <app-chat-area class="w-full md:w-2/3" />
-    } @else {
-      <app-welcome class="w-full md:w-2/3" />
-    }
+    <app-chat-area class="w-full md:w-2/3" />
   </div>
 </div>

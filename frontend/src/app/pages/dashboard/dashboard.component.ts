@@ -3,22 +3,18 @@ import { Component, inject } from '@angular/core';
 import { ConversationComponent } from "../../components/conversation/conversation.component";
 import { ChatAreaComponent } from "../../components/chat-area/chat-area.component";
 import { SidebarComponent } from "../../components/sidebar/sidebar.component";
-import { AuthService } from '../../services/auth.service';
-import { ChatService } from '../../services/chat.service';
-import { WelcomeComponent } from '../../components/welcome/welcome.component';
 import { SocketService } from '../../services/socket.service';
 import { MenuService } from '../../services/menu.service';
+import { SpinnerComponent } from "../../components/spinner/spinner.component";
 
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   templateUrl: './dashboard.component.html',
-  imports: [DatePipe, TitleCasePipe, ConversationComponent, ChatAreaComponent, SidebarComponent, WelcomeComponent]
+  imports: [DatePipe, TitleCasePipe, ConversationComponent, ChatAreaComponent, SidebarComponent, SpinnerComponent]
 })
 export class DashboardComponent {
-  authService = inject(AuthService)
-  chatService = inject(ChatService)
   socketService = inject(SocketService)
   menuService = inject(MenuService)
 

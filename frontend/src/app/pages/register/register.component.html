@@ -3,12 +3,12 @@
   <div
     class="bg-white w-[90%] max-w-[1000px] mx-auto py-5 -translate-y-20 rounded"
   >
-    @if(errorMessage) {
-    <p class="text-red-500 text-xs text-center">{{ errorMessage }}</p>
+    @if (errorMessage) {
+      <p class="text-red-500 text-xs text-center">{{ errorMessage }}</p>
     }
     <!-- form -->
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <div class="p-10 flex flex-col gap-4 max-w-[50%] mx-auto">
+      <div class="p-10 flex flex-col gap-4 md:max-w-[50%] mx-auto">
         <div class="">
           <label
             class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -22,16 +22,20 @@
             name="username"
             formControlName="username"
           />
-          @if(registerForm.controls["username"].invalid &&
-          (registerForm.controls["username"].touched ||
-          registerForm.controls["username"].dirty)){
-          @if(registerForm.controls["username"].errors?.["required"]) {
-          <p class="text-red-500 text-xs">Username is required</p>
-          } @if(registerForm.controls["username"].errors?.["minlength"]) {
-          <p class="text-red-500 text-xs">
-            Minimum length should be at least 4
-          </p>
-          } }
+          @if (
+            registerForm.controls["username"].invalid &&
+            (registerForm.controls["username"].touched ||
+              registerForm.controls["username"].dirty)
+          ) {
+            @if (registerForm.controls["username"].errors?.["required"]) {
+              <p class="text-red-500 text-xs">Username is required</p>
+            }
+            @if (registerForm.controls["username"].errors?.["minlength"]) {
+              <p class="text-red-500 text-xs">
+                Minimum length should be at least 4
+              </p>
+            }
+          }
         </div>
 
         <div class="">
@@ -47,13 +51,17 @@
             name="email"
             formControlName="email"
           />
-          @if(registerForm.controls["email"].invalid &&
-          (registerForm.controls["email"].touched ||
-          registerForm.controls["email"].dirty)){
-          @if(registerForm.controls["email"].errors?.["required"]) {
-          <p class="text-red-500 text-xs">Email is required</p>
-          }} @if(registerForm.controls["email"].errors?.["email"]) {
-          <p class="text-red-500 text-xs">Email is not valid</p>
+          @if (
+            registerForm.controls["email"].invalid &&
+            (registerForm.controls["email"].touched ||
+              registerForm.controls["email"].dirty)
+          ) {
+            @if (registerForm.controls["email"].errors?.["required"]) {
+              <p class="text-red-500 text-xs">Email is required</p>
+            }
+          }
+          @if (registerForm.controls["email"].errors?.["email"]) {
+            <p class="text-red-500 text-xs">Email is not valid</p>
           }
         </div>
 
@@ -70,16 +78,20 @@
             name="password"
             formControlName="password"
           />
-          @if(registerForm.controls["password"].invalid &&
-          (registerForm.controls["password"].touched ||
-          registerForm.controls["password"].dirty)){
-          @if(registerForm.controls["password"].errors?.["required"]) {
-          <p class="text-red-500 text-xs">Password is required</p>
-          } @if(registerForm.controls["password"].errors?.["minlength"]) {
-          <p class="text-red-500 text-xs">
-            Minimum length should be at least 4
-          </p>
-          }}
+          @if (
+            registerForm.controls["password"].invalid &&
+            (registerForm.controls["password"].touched ||
+              registerForm.controls["password"].dirty)
+          ) {
+            @if (registerForm.controls["password"].errors?.["required"]) {
+              <p class="text-red-500 text-xs">Password is required</p>
+            }
+            @if (registerForm.controls["password"].errors?.["minlength"]) {
+              <p class="text-red-500 text-xs">
+                Minimum length should be at least 4
+              </p>
+            }
+          }
         </div>
         <button
           class="self-center bg-[#00a884] text-white font-bold py-2 px-4 rounded-full"
