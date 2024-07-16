@@ -1,3 +1,3 @@
 export const environment = {
-  apiUrl: "/backend"
+  apiUrl: "https://signal-klx5.onrender.com"
 };
