@@ -36,7 +36,10 @@ export class SidebarComponent implements OnInit {
         this.chatService.userConversations.set(conversations)
       },
       complete: () => { this.isLoading.set(false) },
-      error: err => { console.log(err); }
+      error: err => {
+        console.log(err);
+        this.isLoading.set(false)
+      }
     })
 
     this.socketService.getMessage().subscribe({
