@@ -1,9 +1,11 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const { uploadOnFirebase } = require("../utils/firebase");
 
 const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
+    const image = req.file;
 
     const userExists = await User.findOne({
       $or: [{ username: username }, { email: email }],
@@ -13,9 +15,9 @@ const register = async (req, res) => {
       return res.status(409).json("User already exists");
     }
 
-    const userObj = { username, email, password };
+    const imageUrl = await uploadOnFirebase(image);
 
-    const user = await User.create(userObj);
+    const user = await User.create({ username, email, password, imageUrl });
     res.status(201).json(user);
   } catch (error) {
     res.status(500).json(error.message);

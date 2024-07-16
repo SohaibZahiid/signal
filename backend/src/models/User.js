@@ -15,6 +15,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please add a password"],
   },
+  imageUrl: {
+    type: String,
+    required: [true, "Please add a profile picture"],
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema);

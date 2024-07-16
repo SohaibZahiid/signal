@@ -31,7 +31,7 @@ export class ConversationComponent {
 
     if (!this.user()?._id) return this.chatService.selectedUserMessages.set([])
 
-    this.chatService.getMessages(this.user()!._id).subscribe({
+    this.chatService.getMessages(this.user()?._id!).subscribe({
       next: messages => {
         this.chatService.selectedUserMessages.set(messages)
       },

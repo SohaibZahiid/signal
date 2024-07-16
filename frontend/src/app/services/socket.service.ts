@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { Observable } from 'rxjs';
 import { Message } from '../interfaces/message';
 import { Conversation } from '../interfaces/conversation';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class SocketService {
 
   getOnlineUsers() {
     if (this.authService.loggedInUser()) {
-      const socket = io("https://signal-klx5.onrender.com", {
+      const socket = io(environment.apiUrl, {
         query: {
           userId: this.authService.loggedInUser()?._id
         }

@@ -9,12 +9,13 @@ import { User } from '../../interfaces/user';
 import { Conversation } from '../../interfaces/conversation';
 import { SocketService } from '../../services/socket.service';
 import { MenuService } from '../../services/menu.service';
+import { SpinnerComponent } from "../spinner/spinner.component";
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   templateUrl: './sidebar.component.html',
-  imports: [ConversationComponent, TitleCasePipe, FormsModule]
+  imports: [ConversationComponent, TitleCasePipe, FormsModule, SpinnerComponent]
 })
 export class SidebarComponent implements OnInit {
   authService = inject(AuthService)
@@ -26,11 +27,15 @@ export class SidebarComponent implements OnInit {
   searchInput = ""
   searchedUsers = signal<User[]>([])
 
+  isLoading = signal(false)
+
   ngOnInit(): void {
+    this.isLoading.set(true)
     this.chatService.getUserConversations().subscribe({
       next: conversations => {
         this.chatService.userConversations.set(conversations)
       },
+      complete: () => { this.isLoading.set(false) },
       error: err => { console.log(err); }
     })
 

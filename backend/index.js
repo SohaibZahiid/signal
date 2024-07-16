@@ -13,8 +13,8 @@ app.use(
     origin: "http://localhost:4200",
   })
 );
-
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 ////// ROUTES ////////
 const userRoutes = require("./src/routes/user.js");

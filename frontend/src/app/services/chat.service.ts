@@ -3,12 +3,13 @@ import { Injectable, signal } from '@angular/core';
 import { User } from '../interfaces/user';
 import { Conversation } from '../interfaces/conversation';
 import { Message } from '../interfaces/message';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
-  private API: string = "https://signal-klx5.onrender.com"
+  private API: string = environment.apiUrl
   private requestOptions = {
     headers: new HttpHeaders({
       'Authorization': `Bearer ${JSON.parse(localStorage.getItem('user')!).token}`

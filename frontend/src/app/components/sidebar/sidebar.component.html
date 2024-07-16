@@ -24,9 +24,9 @@
   <div class="bg-primary py-2 px-4 flex justify-between items-center">
     <div class="flex flex-1 items-center gap-4">
       <img
-        src="default.jpg"
+        [src]="authService.loggedInUser()?.imageUrl"
         alt="profile picture"
-        class="w-[40px] h-[40px] object-cover rounded-full"
+        class="w-[40px] h-[40px] object-contain rounded-full"
       />
       <h3 class="text-white font-bold">
         {{ authService.loggedInUser()?.username | titlecase }}
@@ -94,19 +94,23 @@
       class="flex flex-col overflow-y-auto"
       style="max-height: calc(100vh - 105px)"
     >
-      @if (chatService.userConversations().length > 0) {
+      @if (chatService.userConversations().length > 0 && !isLoading()) {
         @for (
           userConversation of chatService.userConversations();
           track userConversation._id
         ) {
-          <app-conversation [user]="getReceiverUser(userConversation)" />
+          <app-conversation
+            [user]="getReceiverUser(userConversation)"
+          ></app-conversation>
         }
-      } @else {
+      } @else if (chatService.userConversations().length <= 0 && !isLoading()) {
         <div class="py-16 text-center">
           <small class="text-[#667781]"
             >No chats, contacts or messages found</small
           >
         </div>
+      } @else if (isLoading()) {
+        <app-spinner />
       }
     </div>
     <!-- users end -->
