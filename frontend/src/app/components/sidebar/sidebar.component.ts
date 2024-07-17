@@ -10,6 +10,7 @@ import { Conversation } from '../../interfaces/conversation';
 import { SocketService } from '../../services/socket.service';
 import { MenuService } from '../../services/menu.service';
 import { SpinnerComponent } from "../spinner/spinner.component";
+import { SpinnerService } from '../../services/spinner.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -22,23 +23,26 @@ export class SidebarComponent implements OnInit {
   chatService = inject(ChatService)
   socketService = inject(SocketService)
   menuService = inject(MenuService)
+  spinnerService = inject(SpinnerService)
   route = inject(Router)
 
   searchInput = ""
   searchedUsers = signal<User[]>([])
 
-  isLoading = signal(false)
 
   ngOnInit(): void {
-    this.isLoading.set(true)
+    this.spinnerService.showSidebar()
     this.chatService.getUserConversations().subscribe({
       next: conversations => {
+        console.log(conversations);
         this.chatService.userConversations.set(conversations)
       },
-      complete: () => { this.isLoading.set(false) },
+      complete: () => {
+        this.spinnerService.hideSidebar()
+      },
       error: err => {
         console.log(err);
-        this.isLoading.set(false)
+        this.spinnerService.hideSidebar()
       }
     })
 
@@ -60,11 +64,16 @@ export class SidebarComponent implements OnInit {
   }
 
   onSearchInputChange() {
+    this.spinnerService.showSearching()
     this.authService.getUsersByUsername(this.searchInput).subscribe({
       next: users => {
         this.searchedUsers.set(users)
       },
+      complete: () => {
+        this.spinnerService.hideSearching()
+      },
       error: err => {
+        this.spinnerService.hideSearching()
         console.log(err.message);
       }
     })

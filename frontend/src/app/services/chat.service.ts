@@ -19,6 +19,7 @@ export class ChatService {
   selectedUser = signal<User | undefined>(undefined)
   selectedUserMessages = signal<Message[]>([])
   userConversations = signal<Conversation[]>([])
+  lastMessages = signal<{ senderId: string, receiverId: string, message: string }[] | undefined>(undefined)
 
   constructor(private http: HttpClient) { }
 

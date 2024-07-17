@@ -73,16 +73,24 @@
         <div
           class="bg-input rounded absolute z-10 top-12 right-4 left-4 min-h-10"
         >
-          @if (searchedUsers().length > 0) {
+          @if (searchedUsers().length > 0 && !spinnerService.isSearching()) {
             @for (user of searchedUsers(); track user.username) {
               <app-conversation
                 [user]="user"
                 (searchCleared)="onSearchCleared()"
               />
             }
-          } @else {
+          } @else if (
+            searchedUsers().length <= 0 && !spinnerService.isSearching()
+          ) {
             <div class="mt-2 text-center">
               <small class="text-[#667781]">0 users found</small>
+            </div>
+          } @else {
+            <div class="flex justify-center items-center h-full">
+              <div
+                class="animate-spin rounded-full h-8 w-8 mt-1 border-t-4 border-b-4 border-gray-400"
+              ></div>
             </div>
           }
         </div>
@@ -94,7 +102,10 @@
       class="flex flex-col overflow-y-auto"
       style="max-height: calc(100vh - 105px)"
     >
-      @if (chatService.userConversations().length > 0 && !isLoading()) {
+      @if (
+        chatService.userConversations().length > 0 &&
+        !spinnerService.sidebarIsLoading()
+      ) {
         @for (
           userConversation of chatService.userConversations();
           track userConversation._id
@@ -103,13 +114,16 @@
             [user]="getReceiverUser(userConversation)"
           ></app-conversation>
         }
-      } @else if (chatService.userConversations().length <= 0 && !isLoading()) {
+      } @else if (
+        chatService.userConversations().length <= 0 &&
+        !spinnerService.sidebarIsLoading()
+      ) {
         <div class="py-16 text-center">
           <small class="text-[#667781]"
             >No chats, contacts or messages found</small
           >
         </div>
-      } @else if (isLoading()) {
+      } @else if (spinnerService.sidebarIsLoading()) {
         <app-spinner />
       }
     </div>

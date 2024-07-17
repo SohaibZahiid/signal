@@ -5,17 +5,20 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { MenuService } from '../../services/menu.service';
+import { SpinnerService } from '../../services/spinner.service';
+import { SpinnerComponent } from '../spinner/spinner.component';
 
 @Component({
   selector: 'app-chat-area',
   standalone: true,
-  imports: [TitleCasePipe, DatePipe, NgClass, FormsModule],
+  imports: [TitleCasePipe, DatePipe, NgClass, FormsModule, SpinnerComponent],
   templateUrl: './chat-area.component.html',
 })
 export class ChatAreaComponent implements AfterViewChecked {
   chatService = inject(ChatService)
   authService = inject(AuthService)
   socketService = inject(SocketService)
+  spinnerService = inject(SpinnerService)
   menuService = inject(MenuService)
 
   chatArea = viewChild<ElementRef>("chatArea")
@@ -48,6 +51,7 @@ export class ChatAreaComponent implements AfterViewChecked {
     const receiverId = this.chatService.selectedUser()?._id
     if (!senderId || !receiverId) return
 
+    this.spinnerService.showSending()
     this.chatService.sendMessage(receiverId, this.messageInput()).subscribe({
       next: ({ message, conversation }) => {
         this.chatService.selectedUserMessages.update(values => [...values, message])
@@ -59,7 +63,11 @@ export class ChatAreaComponent implements AfterViewChecked {
         }
         this.messageInput.set("")
       },
+      complete: () => {
+        this.spinnerService.hideSending()
+      },
       error: err => {
+        this.spinnerService.hideSending()
         console.log(err);
       }
     })
