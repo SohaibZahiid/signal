@@ -42,7 +42,10 @@ export class RegisterComponent {
       next: (res) => {
         this.route.navigate(["/login"])
       },
-      error: (err) => { this.errorMessage = err.error }
+      error: (err) => {
+        console.log(err);
+        this.errorMessage = err.error
+      }
     })
   }
 

@@ -112,6 +112,7 @@
         ) {
           <app-conversation
             [user]="getReceiverUser(userConversation)"
+            [lastMessage]="userConversation.lastMessage"
           ></app-conversation>
         }
       } @else if (

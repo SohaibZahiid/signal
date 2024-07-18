@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { SpinnerComponent } from "../spinner/spinner.component";
 import { SpinnerService } from '../../services/spinner.service';
+import { Message } from '../../interfaces/message';
 
 @Component({
   selector: 'app-conversation',
@@ -22,6 +23,7 @@ export class ConversationComponent {
   user = input<User>()
 
   @Output() searchCleared = new EventEmitter<void>()
+  lastMessage = input<Message>()
 
   isOnline = computed(() => this.socketService.onlineUsers().includes(this.user()!._id ?? ""))
 

@@ -34,7 +34,6 @@ export class SidebarComponent implements OnInit {
     this.spinnerService.showSidebar()
     this.chatService.getUserConversations().subscribe({
       next: conversations => {
-        console.log(conversations);
         this.chatService.userConversations.set(conversations)
       },
       complete: () => {

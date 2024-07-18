@@ -26,11 +26,13 @@ const sendMessage = async (req, res) => {
 
     if (newMessage) conversation.messages.push(newMessage._id);
 
-    // this will run in parallel
+    // UPDATE CONVERSATION LAST MESSAGE TO NEWLY SEND MESSAGE
+    conversation.lastMessage = newMessage._id;
+
     await Promise.all([conversation.save(), newMessage.save()]);
 
     conversation = await Conversation.findById(conversation._id).populate(
-      "members"
+      "members lastMessage"
     );
 
     const receiverSocketId = getReceiverSocketId(receiverId);
@@ -40,7 +42,6 @@ const sendMessage = async (req, res) => {
         conversation,
       });
     }
-
     res.status(200).json({ message: newMessage, conversation });
   } catch (error) {
     res.status(500).json(error);
