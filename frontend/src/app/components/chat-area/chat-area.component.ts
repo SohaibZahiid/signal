@@ -24,13 +24,24 @@ export class ChatAreaComponent implements AfterViewChecked {
   chatArea = viewChild<ElementRef>("chatArea")
   messageInput = signal("")
 
-
   constructor() {
     // GET MESSAGE IN REALTIME USING SOCKET, IT WILL RETURN MESSAGE AND CONVERSATION TO SHOW MESSAGE TO ONLY SPECIFIC USER
     this.socketService.getMessage().subscribe({
       next: ({ message, conversation }) => {
         // UPDATE THE CURRENT SELECTED USER SO IT SHOWS MESSAGES OF THAT USER IN CHAT AREA COMPONENT
         const currentSelectedUser = this.chatService.selectedUser();
+
+        // CHECK IF USER OPENED CHAT OF THE USER THAT HAS SEND NEW MESSAGE, IF SO DON'T SHOW NOTIFICATIONS ELSE SHOW
+        if (currentSelectedUser && currentSelectedUser._id === message.senderId) {
+          // IF OPENED CHAT, THEN MARK ALL MESSAGES AS SEEN, AND UPDATE GLOBAL STATE OF SELECTED USER MESSAGES
+          const messagesMarkedAsSeen = this.chatService.selectedUserMessages().map(msg => ({ ...msg, seen: true }))
+          this.chatService.selectedUserMessages.set(messagesMarkedAsSeen)
+          // ALSO MARK NEWLY MESSAGE SENT AS SEEN TOO
+          message.seen = true
+        } else {
+          this.playIncomingMessage()
+          this.chatService.unreadUserMessages.update((values) => [...values, message])
+        }
         // ENSURE WHEN MESSAGE SENT... NOT TO SHOW ALL USERS, ONLY TO SPECIFIC USER THAT HAVE BEEN SENT
         if (currentSelectedUser && conversation.members.some(member => member._id === currentSelectedUser._id)) {
           this.chatService.selectedUserMessages.update(values => [...values, message]);
@@ -55,6 +66,8 @@ export class ChatAreaComponent implements AfterViewChecked {
   }
 
   onSendMessage() {
+    if (!this.messageInput()) return
+
     // CHECK IF SENDER OR RECEIVER ID DOES NOT EXISTS RETURN AS WE CAN'T SEND MESSAGE IF WE DONT HAVE USERS ID'S
     const senderId = this.authService.loggedInUser()?._id
     const receiverId = this.chatService.selectedUser()?._id
@@ -79,6 +92,7 @@ export class ChatAreaComponent implements AfterViewChecked {
         if (conversationExists) {
           conversationExists.lastMessage = message
         }
+        // CLEAR MESSAGE INPUT
         this.messageInput.set("")
       },
       complete: () => {
@@ -94,6 +108,13 @@ export class ChatAreaComponent implements AfterViewChecked {
 
   openMenu() {
     this.menuService.isOpen.set(true)
+  }
+
+  playIncomingMessage() {
+    const audio = new Audio()
+    audio.src = "/sounds/incoming.mp3"
+    audio.load()
+    audio.play()
   }
 
 }

@@ -18,6 +18,7 @@ export class ChatService {
   //Global states
   selectedUser = signal<User | undefined>(undefined)
   selectedUserMessages = signal<Message[]>([])
+  unreadUserMessages = signal<Message[]>([])
   userConversations = signal<Conversation[]>([])
   lastMessages = signal<{ senderId: string, receiverId: string, message: string }[] | undefined>(undefined)
 
@@ -41,5 +42,6 @@ export class ChatService {
       return membersIds.includes(senderId) && membersIds.includes(receiverId)
     })
   }
+
 
 }

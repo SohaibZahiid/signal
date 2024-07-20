@@ -3,5 +3,6 @@ export interface Message {
   senderId: string;
   receiverId: string
   message: string,
+  seen?: boolean,
   createdAt?: string
 }

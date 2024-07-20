@@ -16,6 +16,10 @@ const MessageSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please add a message"],
     },
+    seen: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

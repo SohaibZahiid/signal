@@ -26,6 +26,7 @@ export class ConversationComponent {
   lastMessage = input<Message>()
 
   isOnline = computed(() => this.socketService.onlineUsers().includes(this.user()!._id ?? ""))
+  hasUnreadMessages = computed(() => this.chatService.unreadUserMessages().some(msg => msg.senderId === this.user()?._id))
 
   onSelectUser() {
     // Clear search input
@@ -33,12 +34,22 @@ export class ConversationComponent {
 
     this.chatService.selectedUser.set(this.user())
 
-    if (!this.user()?._id) return this.chatService.selectedUserMessages.set([])
+    if (!this.user()) return this.chatService.selectedUserMessages.set([])
 
     this.spinnerService.showChatArea()
     this.chatService.getMessages(this.user()?._id!).subscribe({
       next: messages => {
         this.chatService.selectedUserMessages.set(messages)
+        // MARK SELECTED USER MESSAGES AS SEEN
+        const updatedMessages = this.chatService.selectedUserMessages().map(msg => {
+          if (msg.senderId === this.user()?._id && !msg.seen) {
+            return { ...msg, seen: true }
+          }
+          return msg
+        })
+
+        this.chatService.selectedUserMessages.set(updatedMessages)
+        this.chatService.unreadUserMessages.update(messages => messages.filter(msg => msg.senderId !== this.user()?._id))
       },
       complete: () => {
         this.spinnerService.hidechatArea()
