@@ -24,6 +24,14 @@ export class ChatService {
 
   constructor(private http: HttpClient) { }
 
+  markConversationMessagesAsRead(conversationId: string) {
+    return this.http.post<Message[]>(`${this.API}/message/${conversationId}/read`, this.requestOptions)
+  }
+
+  markConversationMessagesAsUnread(conversationId: string, message: Message) {
+    return this.http.post<Message[]>(`${this.API}/message/${conversationId}/unread`, { message }, this.requestOptions)
+  }
+
   sendMessage(receiverId: string, message: string) {
     return this.http.post<{ message: Message, conversation: Conversation }>(`${this.API}/message/${receiverId}`, { message }, this.requestOptions)
   }
@@ -36,12 +44,25 @@ export class ChatService {
     return this.http.get<Conversation[]>(`${this.API}/conversation`, this.requestOptions);
   }
 
-  conversationExists(senderId: string, receiverId: string) {
-    return this.userConversations().some(conversation => {
-      const membersIds = conversation.members.map(member => member._id)
-      return membersIds.includes(senderId) && membersIds.includes(receiverId)
-    })
+  // HELPERS METHODS
+
+  existingConversation(conversationId: string) {
+    return this.userConversations().find(conv => conv._id === conversationId)
   }
 
+  addToSelectedUserMessages(message: Message) {
+    this.selectedUserMessages.update(values => [...values, message]);
+  }
+
+  markMessagesAsRead() {
+    this.selectedUserMessages().map(message => ({ ...message, seen: true }))
+  }
+
+  playIncomingMessage() {
+    const audio = new Audio()
+    audio.src = "/sounds/incoming.mp3"
+    audio.load()
+    audio.play()
+  }
 
 }

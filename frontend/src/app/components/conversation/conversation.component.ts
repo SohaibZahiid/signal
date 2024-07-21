@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, computed, EventEmitter, inject, input, Output, signal } from '@angular/core';
+import { Component, computed, DoCheck, EventEmitter, inject, input, Output, signal } from '@angular/core';
 import { User } from '../../interfaces/user';
 import { ChatService } from '../../services/chat.service';
 import { AuthService } from '../../services/auth.service';
@@ -7,6 +7,7 @@ import { SocketService } from '../../services/socket.service';
 import { SpinnerComponent } from "../spinner/spinner.component";
 import { SpinnerService } from '../../services/spinner.service';
 import { Message } from '../../interfaces/message';
+import { Conversation } from '../../interfaces/conversation';
 
 @Component({
   selector: 'app-conversation',
@@ -24,32 +25,32 @@ export class ConversationComponent {
 
   @Output() searchCleared = new EventEmitter<void>()
   lastMessage = input<Message>()
+  unreadMessages = input<Message[]>()
+  conversation = input<Conversation>()
 
+  // KEEPS OBSERVING ONLINE USERS STATE FROM SERVICE, WHENEVER THAT STATE CHANGES IT WILL UPDATE THIS VARIABLE VALUE
   isOnline = computed(() => this.socketService.onlineUsers().includes(this.user()!._id ?? ""))
-  hasUnreadMessages = computed(() => this.chatService.unreadUserMessages().some(msg => msg.senderId === this.user()?._id))
+
 
   onSelectUser() {
-    // Clear search input
+    // EMITS EVENT TO PARENT COMPONENT (SIDEBAR) TO CLEAR SEARCH INPUT
     this.searchCleared.emit()
-
+    // ON USER CLICK IT WILL SET SELECTED USER STATE OF CLICKED USER
     this.chatService.selectedUser.set(this.user())
-
+    // IF SOMEHOW CLICKED USER DOES NOT EXISTS IT WILL SET THEIR MESSAGES AS EMPTY ARRAY
     if (!this.user()) return this.chatService.selectedUserMessages.set([])
 
+    // MAKE API CALL TO GET MESSAGES FOR SELECTED USER
     this.spinnerService.showChatArea()
     this.chatService.getMessages(this.user()?._id!).subscribe({
       next: messages => {
+        // THE MESSAGES RETURNED FROM SERVER ALREADY ARE MARKED AS SEEN, 
         this.chatService.selectedUserMessages.set(messages)
-        // MARK SELECTED USER MESSAGES AS SEEN
-        const updatedMessages = this.chatService.selectedUserMessages().map(msg => {
-          if (msg.senderId === this.user()?._id && !msg.seen) {
-            return { ...msg, seen: true }
-          }
-          return msg
-        })
-
-        this.chatService.selectedUserMessages.set(updatedMessages)
-        this.chatService.unreadUserMessages.update(messages => messages.filter(msg => msg.senderId !== this.user()?._id))
+        // MARK STATE MESSAGES AS READ
+        const conversation = this.chatService.userConversations().find(conv => conv._id === this.conversation()?._id);
+        if (conversation) {
+          conversation.messages.forEach(message => message.seen = true);
+        }
       },
       complete: () => {
         this.spinnerService.hidechatArea()

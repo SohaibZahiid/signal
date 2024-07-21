@@ -93,4 +93,10 @@ export class SidebarComponent implements OnInit {
     this.menuService.isOpen.set(false)
   }
 
+  getUnreadUserMessages(conversation: Conversation) {
+    const loggedInUserId = this.authService.loggedInUser()?._id;
+    return conversation.messages.filter(msg => msg.senderId !== loggedInUserId && !msg.seen)
+
+  }
+
 }

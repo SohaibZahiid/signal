@@ -30,24 +30,24 @@ export class ChatAreaComponent implements AfterViewChecked {
       next: ({ message, conversation }) => {
         // UPDATE THE CURRENT SELECTED USER SO IT SHOWS MESSAGES OF THAT USER IN CHAT AREA COMPONENT
         const currentSelectedUser = this.chatService.selectedUser();
-
         // CHECK IF USER OPENED CHAT OF THE USER THAT HAS SEND NEW MESSAGE, IF SO DON'T SHOW NOTIFICATIONS ELSE SHOW
         if (currentSelectedUser && currentSelectedUser._id === message.senderId) {
           // IF OPENED CHAT, THEN MARK ALL MESSAGES AS SEEN, AND UPDATE GLOBAL STATE OF SELECTED USER MESSAGES
-          const messagesMarkedAsSeen = this.chatService.selectedUserMessages().map(msg => ({ ...msg, seen: true }))
-          this.chatService.selectedUserMessages.set(messagesMarkedAsSeen)
+          this.chatService.markMessagesAsRead()
           // ALSO MARK NEWLY MESSAGE SENT AS SEEN TOO
           message.seen = true
         } else {
-          this.playIncomingMessage()
-          this.chatService.unreadUserMessages.update((values) => [...values, message])
+          this.chatService.playIncomingMessage()
+          this.chatService.selectedUserMessages.update(messages => [...messages, message])
+          this.chatService.userConversations().find(conv => conv._id === conversation._id)!.messages.push(message)
         }
-        // ENSURE WHEN MESSAGE SENT... NOT TO SHOW ALL USERS, ONLY TO SPECIFIC USER THAT HAVE BEEN SENT
-        if (currentSelectedUser && conversation.members.some(member => member._id === currentSelectedUser._id)) {
-          this.chatService.selectedUserMessages.update(values => [...values, message]);
+        // ENSURE WHEN MESSAGE RECEIVED... NOT TO SHOW ALL USERS, ONLY TO SPECIFIC USER THAT HAVE BEEN INTENDED FOR
+        if (message.senderId === this.authService.loggedInUser()?._id) {
+          this.chatService.addToSelectedUserMessages(message)
         }
+
         // UPDATE USER CONVERSATIONS STATE, FIND USER CONVERSATION FIRST THEN UPDATE THEIR LAST MESSAGE TO THE MESSAGE THAT HAS BEEN SENT
-        const conversationExists = this.chatService.userConversations().find(conv => conv._id === conversation._id)
+        const conversationExists = this.chatService.existingConversation(conversation._id)
         if (conversationExists) {
           conversationExists.lastMessage = message
         }
@@ -83,15 +83,15 @@ export class ChatAreaComponent implements AfterViewChecked {
         // SEND SOCKET EVENT TO SERVER ABOUT NEW MESSAGE
         this.socketService.sendMessage(message)
         // CHECK IF USER ALREADY HAS CONVERSATION WITH THE USER THAT HE SENT MESSAGE
-        const conversationExists = this.chatService.userConversations().find(conv => conv._id === conversation._id)
+        const conversationExists = this.chatService.existingConversation(conversation._id)
         if (!conversationExists) {
           // IF USER DOES NOT HAVE CONVERSATION THEN CREATE NEW CONVERSATION (SHOW USER ON SIDEBAR)
           this.chatService.userConversations.update(values => [conversation, ...values])
-        }
-        // UPDATE USER CONVERSATIONS STATE, FIND USER CONVERSATION FIRST THEN UPDATE THEIR LAST MESSAGE TO THE MESSAGE THAT HAS BEEN SENT
-        if (conversationExists) {
+        } else {
+          // UPDATE USER CONVERSATIONS STATE, FIND USER CONVERSATION FIRST THEN UPDATE THEIR LAST MESSAGE TO THE MESSAGE THAT HAS BEEN SENT
           conversationExists.lastMessage = message
         }
+
         // CLEAR MESSAGE INPUT
         this.messageInput.set("")
       },
@@ -110,11 +110,6 @@ export class ChatAreaComponent implements AfterViewChecked {
     this.menuService.isOpen.set(true)
   }
 
-  playIncomingMessage() {
-    const audio = new Audio()
-    audio.src = "/sounds/incoming.mp3"
-    audio.load()
-    audio.play()
-  }
+
 
 }

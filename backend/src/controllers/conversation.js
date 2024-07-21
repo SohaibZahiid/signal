@@ -6,7 +6,7 @@ const getUserConversations = async (req, res) => {
     const conversations = await Conversation.find({
       members: loggedInUserId,
     })
-      .populate("members messages lastMessage")
+      .populate("members messages lastMessage unreadMessages")
       .sort({ createdAt: -1 });
 
     if (!conversations) return res.status(200).json([]);

@@ -58,7 +58,38 @@ const getMessages = async (req, res) => {
 
     if (!conversation) return res.status(200).json([]);
 
+    // const messagesAsSeen = conversation.messages.map((message) => {
+    //   message.seen = true;
+    //   return message;
+    // });
+
+    await Message.updateMany(
+      {
+        seen: false,
+      },
+      { $set: { seen: true } }
+    );
+
     res.status(200).json(conversation.messages);
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};
+
+const markAsRead = async (req, res) => {
+  const conversationId = req.params.conversationId;
+};
+
+const markAsUnread = async (req, res) => {
+  try {
+    const conversationId = req.params.conversationId;
+    const { message } = req.body;
+
+    const conversation = await Conversation.findByIdAndUpdate(conversationId, {
+      $push: { unreadMessages: message },
+    }).populate("unreadMessages");
+
+    res.status(200).json(conversation.unreadMessages);
   } catch (error) {
     res.status(500).json(error.message);
   }
@@ -67,4 +98,6 @@ const getMessages = async (req, res) => {
 module.exports = {
   sendMessage,
   getMessages,
+  markAsRead,
+  markAsUnread,
 };

@@ -14,6 +14,12 @@ const ConversationSchema = mongoose.Schema(
         ref: "Message",
       },
     ],
+    unreadMessages: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Message",
+      },
+    ],
     lastMessage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message",

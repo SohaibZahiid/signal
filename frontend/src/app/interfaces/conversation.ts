@@ -5,5 +5,6 @@ export interface Conversation {
   _id: string,
   members: User[],
   messages: Message[],
-  lastMessage?: Message
+  lastMessage?: Message,
+  unreadMessages?: Message[]
 }
