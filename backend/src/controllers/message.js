@@ -58,6 +58,14 @@ const getMessages = async (req, res) => {
 
     if (!conversation) return res.status(200).json([]);
 
+    // MARK MESSAGES ARE READ AS USER GET THEM
+    await Message.updateMany(
+      {
+        seen: false,
+      },
+      { $set: { seen: true } }
+    );
+
     res.status(200).json(conversation.messages);
   } catch (error) {
     res.status(500).json(error.message);

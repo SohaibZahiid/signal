@@ -112,7 +112,8 @@
         ) {
           <app-conversation
             [user]="getReceiverUser(userConversation)"
-            [lastMessage]="userConversation.lastMessage"
+            [conversation]="userConversation"
+            [unreadMessages]="getUnreadUserMessages(userConversation)"
           ></app-conversation>
         }
       } @else if (

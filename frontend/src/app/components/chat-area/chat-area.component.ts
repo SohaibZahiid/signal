@@ -30,7 +30,18 @@ export class ChatAreaComponent implements AfterViewChecked {
       next: ({ message, conversation }) => {
         // UPDATE THE CURRENT SELECTED USER SO IT SHOWS MESSAGES OF THAT USER IN CHAT AREA COMPONENT
         const currentSelectedUser = this.chatService.selectedUser();
-
+        // CHECK IF USER OPENED CHAT OF THE USER THAT HAS SEND NEW MESSAGE, IF SO DON'T SHOW NOTIFICATIONS ELSE SHOW
+        if (currentSelectedUser && currentSelectedUser._id === message.senderId) {
+          // IF OPENED CHAT, THEN MARK ALL MESSAGES AS SEEN, AND UPDATE GLOBAL STATE OF SELECTED USER MESSAGES
+          this.chatService.markUserMessagesAsRead()
+          // ALSO MARK NEWLY MESSAGE SENT AS SEEN TOO
+          message.seen = true
+          this.chatService.playIncomingMessage(true)
+        } else {
+          this.chatService.playIncomingMessage()
+          this.chatService.selectedUserMessages.update(messages => [...messages, message])
+          this.chatService.userConversations().find(conv => conv._id === conversation._id)!.messages.push(message)
+        }
         // CHECK IF USER OPENED CHAT OF THE USER THAT HAS SEND NEW MESSAGE, IF SO DON'T SHOW NOTIFICATIONS ELSE SHOW
         if (currentSelectedUser && currentSelectedUser._id === message.senderId) {
           // IF OPENED CHAT, THEN MARK ALL MESSAGES AS SEEN, AND UPDATE GLOBAL STATE OF SELECTED USER MESSAGES

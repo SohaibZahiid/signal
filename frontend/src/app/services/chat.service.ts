@@ -43,5 +43,14 @@ export class ChatService {
     })
   }
 
+  markUserMessagesAsRead() {
+    this.selectedUserMessages().map(message => ({ ...message, seen: true }))
+  }
 
+  playIncomingMessage(userSelected: boolean = false) {
+    const audio = new Audio()
+    audio.src = `/sounds/incoming${userSelected ? "2" : ""}.mp3`
+    audio.load()
+    audio.play()
+  }
 }
