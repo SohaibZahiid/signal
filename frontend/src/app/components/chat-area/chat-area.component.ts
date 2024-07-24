@@ -24,7 +24,11 @@ export class ChatAreaComponent implements AfterViewChecked {
   chatArea = viewChild<ElementRef>("chatArea")
   messageInput = signal("")
 
-  constructor() {
+  ngOnInit(): void {
+    this.getIncomingMessage()
+  }
+
+  getIncomingMessage() {
     // GET MESSAGE IN REALTIME USING SOCKET, IT WILL RETURN MESSAGE AND CONVERSATION TO SHOW MESSAGE TO ONLY SPECIFIC USER
     this.socketService.getMessage().subscribe({
       next: ({ message, conversation }) => {
@@ -49,8 +53,9 @@ export class ChatAreaComponent implements AfterViewChecked {
           this.chatService.selectedUserMessages.set(messagesMarkedAsSeen)
           // ALSO MARK NEWLY MESSAGE SENT AS SEEN TOO
           message.seen = true
+          this.chatService.playIncomingMessage(true)
         } else {
-          this.playIncomingMessage()
+          this.chatService.playIncomingMessage()
           this.chatService.unreadUserMessages.update((values) => [...values, message])
         }
         // ENSURE WHEN MESSAGE SENT... NOT TO SHOW ALL USERS, ONLY TO SPECIFIC USER THAT HAVE BEEN SENT
@@ -83,6 +88,8 @@ export class ChatAreaComponent implements AfterViewChecked {
     const senderId = this.authService.loggedInUser()?._id
     const receiverId = this.chatService.selectedUser()?._id
     if (!senderId || !receiverId) return
+
+
 
     // SEND USER MESSAGE TO SERVER AND STORE IT IN DATABASE
     this.spinnerService.showSending()
@@ -121,11 +128,5 @@ export class ChatAreaComponent implements AfterViewChecked {
     this.menuService.isOpen.set(true)
   }
 
-  playIncomingMessage() {
-    const audio = new Audio()
-    audio.src = "/sounds/incoming.mp3"
-    audio.load()
-    audio.play()
-  }
 
 }

@@ -14,12 +14,14 @@
         <h3 class="font-bold">{{ user()?.username | titlecase }}</h3>
         <p>{{ conversation()?.lastMessage?.message }}</p>
       </div>
-      @if (unreadMessages()!.length > 0) {
-        <div
-          class="h-5 w-5 bg-[#00a884] rounded-full flex items-center justify-center text-sm"
-        >
-          {{ unreadMessages()?.length }}
-        </div>
+      @if (unreadMessages()) {
+        @if (unreadMessages()!.length > 0) {
+          <div
+            class="h-5 w-5 bg-[#00a884] rounded-full flex items-center justify-center text-sm"
+          >
+            {{ unreadMessages()?.length }}
+          </div>
+        }
       }
     </div>
   </div>

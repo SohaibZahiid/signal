@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common';
-import { Component, computed, EventEmitter, inject, input, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, input, Output } from '@angular/core';
 import { User } from '../../interfaces/user';
 import { ChatService } from '../../services/chat.service';
 import { AuthService } from '../../services/auth.service';
@@ -30,7 +30,7 @@ export class ConversationComponent {
   isOnline = computed(() => this.socketService.onlineUsers().includes(this.user()!._id ?? ""))
 
   onSelectUser() {
-    // EMITS EVENT TO PARENT COMPONENT (SIDEBAR) TO CLEAR SEARCH INPUT
+    // EMITS EVENT TO PARENT COMPONENT TO CLEAR SEARCH INPUT
     this.searchCleared.emit()
     // ON USER CLICK IT WILL SET SELECTED USER STATE OF CLICKED USER
     this.chatService.selectedUser.set(this.user())

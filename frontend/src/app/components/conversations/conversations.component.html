@@ -1,0 +1,31 @@
+<!-- users -->
+<div
+  class="flex flex-col overflow-y-auto"
+  style="max-height: calc(100vh - 105px)"
+>
+  @if (
+    chatService.userConversations().length > 0 &&
+    !spinnerService.sidebarIsLoading()
+  ) {
+    @for (
+      userConversation of chatService.userConversations();
+      track userConversation._id
+    ) {
+      <app-conversation
+        [user]="getReceiverUser(userConversation)"
+        [conversation]="userConversation"
+        [unreadMessages]="getUnreadUserMessages(userConversation)"
+      ></app-conversation>
+    }
+  } @else if (
+    chatService.userConversations().length <= 0 &&
+    !spinnerService.sidebarIsLoading()
+  ) {
+    <div class="py-16 text-center">
+      <small class="text-[#667781]">No chats, contacts or messages found</small>
+    </div>
+  } @else if (spinnerService.sidebarIsLoading()) {
+    <app-spinner />
+  }
+</div>
+<!-- users end -->

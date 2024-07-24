@@ -1,0 +1,35 @@
+<!-- search bar -->
+<div class="relative w-full py-2 px-4">
+  <div class="flex justify-between items-center">
+    <input
+      type="text"
+      placeholder="Search new chat"
+      class="outline-none text-white bg-input py-1 px-4 md:px-10 rounded flex-1"
+      [(ngModel)]="searchInput"
+      (input)="onSearchInputChange()"
+    />
+  </div>
+
+  @if (searchInput) {
+    <div class="bg-input rounded absolute z-10 top-12 right-4 left-4 min-h-10">
+      @if (searchedUsers().length > 0 && !spinnerService.isSearching()) {
+        @for (user of searchedUsers(); track user.username) {
+          <app-conversation [user]="user" (searchCleared)="onSearchCleared()" />
+        }
+      } @else if (
+        searchedUsers().length <= 0 && !spinnerService.isSearching()
+      ) {
+        <div class="mt-2 text-center">
+          <small class="text-[#667781]">0 users found</small>
+        </div>
+      } @else {
+        <div class="flex justify-center items-center h-full">
+          <div
+            class="animate-spin rounded-full h-8 w-8 mt-1 border-t-4 border-b-4 border-gray-400"
+          ></div>
+        </div>
+      }
+    </div>
+  }
+</div>
+<!-- end search bar -->
